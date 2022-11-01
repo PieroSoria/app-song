@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:audiojet/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -12,6 +14,7 @@ class PageManager {
   // Listeners: Updates going to the UI
   final currentSongTitleNotifier = ValueNotifier<String>('');
   final currentSongArtistNotifier = ValueNotifier<String>('');
+  final currentSongIndexNotifier = ValueNotifier<String>('');
   final playlistNotifier = ValueNotifier<List<String>>([]);
   final progressNotifier = ProgressNotifier();
   final repeatButtonNotifier = RepeatButtonNotifier();
@@ -142,6 +145,7 @@ class PageManager {
     _audioHandler.mediaItem.listen((mediaItem) {
       currentSongTitleNotifier.value = mediaItem?.title ?? '';
       currentSongArtistNotifier.value = mediaItem?.artist ?? '';
+      currentSongIndexNotifier.value = mediaItem?.id ?? '0';
       _updateSkipButtons();
     });
   }
@@ -162,6 +166,7 @@ class PageManager {
     }
   }
 
+  // int getIndex() => _audioHandler.getIndex();
   void play() => _audioHandler.play();
   void pause() => _audioHandler.pause();
 

@@ -1,3 +1,5 @@
+import 'package:audiojet/constants.dart';
+import 'package:audiojet/settings.dart';
 import 'package:audiojet/widgets/playlist_card.dart';
 import 'package:audiojet/widgets/section_header.dart';
 import 'package:audiojet/widgets/big_song_card.dart';
@@ -14,67 +16,92 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   requestPermission();
-  //   getSongs();
-  // }
+  final OnAudioQuery _audioQuery = OnAudioQuery();
 
-  // requestPermission() async {
-  //   // Web platform don't support permissions methods.
-  //   if (!kIsWeb) {
-  //     bool permissionStatus = await _audioQuery.permissionsStatus();
-  //     if (!permissionStatus) {
-  //       await _audioQuery.permissionsRequest();
-  //     }
-  //     setState(() {});
-  //   }
-  // }
+  @override
+  void initState() {
+    super.initState();
+    requestPermission();
+    getSongs();
+  }
 
-  // getSongs() async {
-  //   allSongs =
-  //       await _audioQuery.querySongs().whenComplete(() => setState(() {}));
-  //   getPlayList();
-  // }
+  requestPermission() async {
+    // Web platform don't support permissions methods.
+    if (!kIsWeb) {
+      bool permissionStatus = await _audioQuery.permissionsStatus();
+      if (!permissionStatus) {
+        await _audioQuery.permissionsRequest();
+      }
+      setState(() {});
+    }
+  }
 
-  // getPlayList() async {
-  //   // _audioQuery.queryAudiosFrom(AudiosFromType.PLAYLIST,Null);
-  //   playList =
-  //       await _audioQuery.queryPlaylists().whenComplete(() => setState(() {}));
-  // }
+  getSongs() async {
+    allSongs =
+        await _audioQuery.querySongs().whenComplete(() => setState(() {}));
+    getPlayList();
+  }
+
+  getPlayList() async {
+    // _audioQuery.queryAudiosFrom(AudiosFromType.PLAYLIST,Null);
+    playList =
+        await _audioQuery.queryPlaylists().whenComplete(() => setState(() {}));
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-            Colors.deepPurple.shade800.withOpacity(0.8),
-            Colors.deepPurple.shade200.withOpacity(0.8),
-          ])),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: const _CustomAppBar(),
-        body: SingleChildScrollView(
-          child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const _DiscoverMusic(),
-              _TrendingMusic(songsList: allSongs),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    SectionHeader(title: "Playlist", action: 'View More'),
-                    PlayListCard(playList: playList)
-                  ],
-                ),
-              )
-            ],
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(90),
           ),
+        ),
+        backgroundColor: appBarColor,
+        elevation: 0,
+        title: const Text("Audio Jet"),
+        centerTitle: true,
+      ),
+      extendBodyBehindAppBar: true,
+      body: SingleChildScrollView(
+        child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 80,
+            ),
+            const _DiscoverMusic(),
+            _TrendingMusic(songsList: allSongs),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SectionHeader(title: "Playlist", action: 'View More'),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          isHomePlaylistGrid = !isHomePlaylistGrid;
+                        });
+                      },
+                      icon: Icon(
+                        !isHomePlaylistGrid
+                            ? Icons.grid_view_outlined
+                            : Icons.list_outlined,
+                        color: Colors.white,
+                      )),
+                  PlayListCard(
+                    playList: playList,
+                    representerBoolean: isHomePlaylistGrid,
+                  ),
+                  Container(
+                    height: 100,
+                  )
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -94,52 +121,35 @@ class _TrendingMusic extends StatelessWidget {
     var size = MediaQuery.of(context).size;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20, right: 2),
+      padding: const EdgeInsets.only(left: 2, top: 20, bottom: 20, right: 2),
       child: Column(children: [
-        SectionHeader(title: "Trending Music", action: "View More"),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: SectionHeader(title: "Trending Music", action: "View More"),
+        ),
         const SizedBox(
           height: 5,
         ),
         SizedBox(
-          height: size.height * 0.25,
-          child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: songsList.length < 8 ? songsList.length : 5,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                // log(songsList[index].data);
-                return BigSoundCard(song: songsList[index]);
-              }),
+          width: size.width,
+          height: size.height * 0.46,
+          child: Center(
+            child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2),
+                scrollDirection: Axis.horizontal,
+                itemCount: 4,
+                itemBuilder: (context, index) {
+                  // log(songsList[index].data);
+                  return BigSoundCard(song: songsList[index]);
+                }),
+          ),
         )
       ]),
     );
   }
-}
-
-//theAppBar
-class _CustomAppBar extends StatelessWidget with PreferredSizeWidget {
-  const _CustomAppBar();
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      leading: const Icon(Icons.grid_view_rounded),
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 20),
-          child: const CircleAvatar(
-            backgroundImage: NetworkImage(
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRvBRMW5ejDvxtrTRXNcO-7hQd0bN69mZpve42KBTF&s"),
-          ),
-        )
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(56.0);
 }
 
 //musicSearchBar

@@ -1,5 +1,7 @@
+import 'package:audiojet/constants.dart';
 import 'package:audiojet/page_manager.dart';
 import 'package:audiojet/services/service_locator.dart';
+import 'package:audiojet/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 
@@ -13,25 +15,23 @@ class CurrentSongTitle extends StatefulWidget {
 
 class _CurrentSongTitleState extends State<CurrentSongTitle> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    widget.isMinimized ??= false;
-  }
-
-  @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    widget.isMinimized ??= false;
 
     final pageManager = getIt<PageManager>();
     return ValueListenableBuilder<String>(
       valueListenable: pageManager.currentSongTitleNotifier,
       builder: (_, title, __) {
+        //setting one image for each song
+        //changing the image as the song changes
+        playerScreenIcon = getRandomImage();
+
         return SizedBox(
           height: widget.isMinimized! ? 20 : 50,
           width: size.width / 1.2,
           child: Marquee(
-            text: title,
+            text: title != "" ? title : "No queued item",
             startAfter: const Duration(seconds: 3),
             style: TextStyle(
                 fontSize: widget.isMinimized! ? 14 : 24,
@@ -39,7 +39,7 @@ class _CurrentSongTitleState extends State<CurrentSongTitle> {
             scrollAxis: Axis.horizontal,
             crossAxisAlignment: CrossAxisAlignment.start,
             blankSpace: 20.0,
-            velocity: 80.0,
+            velocity: 40.0,
             pauseAfterRound: const Duration(seconds: 1),
             startPadding: 10.0,
             accelerationDuration: const Duration(seconds: 1),

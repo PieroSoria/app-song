@@ -14,13 +14,9 @@ class PlayerButtons extends StatefulWidget {
 
 class _PlayerButtonsState extends State<PlayerButtons> {
   @override
-  void initState() {
-    super.initState();
-    widget.isMinimized ??= false;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    widget.isMinimized ??= false;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

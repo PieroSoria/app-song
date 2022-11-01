@@ -26,6 +26,9 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     getIt<PageManager>().init();
+    //after initalizing we will set a
+    //listener to identify which song is playing and set the index accordingly
+    PageManager().currentSongIndexNotifier.addListener(() {});
   }
 
   @override
@@ -43,11 +46,11 @@ class _MyAppState extends State<MyApp> {
           textTheme: Theme.of(context)
               .textTheme
               .apply(bodyColor: Colors.white, displayColor: Colors.white)),
-      home: SongListScreen(),
+      home: const TabWindow(),
       getPages: [
         GetPage(name: '/', page: () => const HomeScreen()),
         GetPage(name: '/song', page: () => const PlayerScreen()),
-        GetPage(name: '/playlist', page: () => const PlayListScreen()),
+        GetPage(name: '/playlist', page: () => const PlayListShowScreen()),
       ],
     );
   }

@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+import 'package:audiojet/constants.dart';
 import 'package:audiojet/notifiers/progress_notifier.dart';
 import 'package:audiojet/notifiers/repeat_button_notifier.dart';
 import 'package:audiojet/page_manager.dart';
 import 'package:audiojet/utils.dart';
 import 'package:audiojet/widgets/current_song_artist.dart';
 import 'package:audiojet/widgets/current_song_title.dart';
+import 'package:audiojet/widgets/my_circular_slider.dart';
 import 'package:audiojet/widgets/player_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -66,9 +68,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   // get song cover image colors
   Future<PaletteGenerator> getImageColors() async {
-    var paletteGenerator = await PaletteGenerator.fromImageProvider(
-      const AssetImage('assets/image.png'),
-    );
+    var paletteGenerator = PaletteGenerator.fromColors([
+      PaletteColor(Colors.orange, 1),
+      // PaletteColor(Colors., 1),
+      PaletteColor(Colors.greenAccent, 1),
+      PaletteColor(Colors.redAccent, 4),
+      PaletteColor(Colors.pink, 1),
+      PaletteColor(Colors.pinkAccent, 1),
+      PaletteColor(Colors.green, 1),
+    ]);
+    // var paletteGenerator = await PaletteGenerator.fromImageProvider(
+    //   const AssetImage('assets/canva.png'),
+    // );
     return paletteGenerator;
   }
 
@@ -82,89 +93,94 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
+    return Container(
+      decoration: BoxDecoration(
+        color: primaryColor,
+      ),
+      child: Scaffold(
           backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 30,
-                  color: Colors.white,
-                )),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 30,
+                    color: Colors.white,
+                  )),
+            ),
           ),
-        ),
-        extendBodyBehindAppBar: true,
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            FutureBuilder<PaletteGenerator>(
-              future: getImageColors(),
-              builder: (context, snapshot) {
-                return Container(
-                  color: snapshot.data?.mutedColor?.color,
-                );
-              },
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(.7)
-                    ])),
+          extendBodyBehindAppBar: true,
+          body: Stack(
+            alignment: Alignment.center,
+            children: [
+              // FutureBuilder<PaletteGenerator>(
+              //   future: getImageColors(),
+              //   builder: (context, snapshot) {
+              //     return Container(
+              //       color: snapshot.data?.dominantColor!.color,
+              //     );
+              //   },
+              // ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(.7)
+                      ])),
+                ),
               ),
-            ),
-            Positioned(
-              height: size.height / 1.5,
-              child: Column(
-                children: [
-                  CurrentSongTitle(),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  const CurrentSongArtist(),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height / 20,
-                  ),
-                ],
-              ),
-            ),
-            const Center(
-              child: AudioProgressBar(),
-            ),
-            Positioned(
-              top: MediaQuery.of(context).size.height / 1.3,
-              left: 0,
-              right: 0,
-              child: Column(
-                children: [
-                  Center(
-                    child: PlayerButtons(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        RepeatButton(),
-                        ShuffleButton(),
-                      ],
+              Positioned(
+                height: size.height / 1.5,
+                child: Column(
+                  children: [
+                    CurrentSongTitle(),
+                    const SizedBox(
+                      height: 5,
                     ),
-                  ),
-                ],
+                    const CurrentSongArtist(),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 20,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ));
+              const Center(
+                child: AudioProgressBar(),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height / 1.3,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    Center(
+                      child: PlayerButtons(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          RepeatButton(),
+                          ShuffleButton(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )),
+    );
   }
 }
 
@@ -258,87 +274,6 @@ class AudioProgressBar extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-}
-
-class CircularSlider extends StatefulWidget {
-  CircularSlider({
-    Key? key,
-    required this.position,
-    required this.duration,
-    this.onChanged,
-    this.onChangedEnd,
-  }) : super(key: key);
-
-  final Duration position;
-  final Duration duration;
-  ValueChanged<Duration>? onChanged;
-  ValueChanged<Duration>? onChangedEnd;
-
-  @override
-  State<CircularSlider> createState() => _CircularSliderState();
-}
-
-class _CircularSliderState extends State<CircularSlider> {
-  double? dragValue;
-
-  _decideValue() {
-    var tempPositionValue = widget.position.inMilliseconds.toDouble();
-    var tempDurationValue = widget.duration.inMilliseconds.toDouble();
-    if (tempPositionValue >= 0.0) {
-      if (tempPositionValue <= tempDurationValue) {
-        return tempPositionValue;
-      }
-      return tempPositionValue = tempDurationValue;
-    }
-    return tempPositionValue = 0.0;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SleekCircularSlider(
-      min: 0.0,
-      max: widget.duration.inMilliseconds.toDouble(),
-      // initialValue: min(
-      //   dragValue ?? widget.position.inMilliseconds.toDouble(),
-      //   widget.position.inMilliseconds.toDouble(),
-      // ),
-      initialValue: dragValue ?? _decideValue(),
-      onChange: (value) {
-        setState(() {
-          dragValue = value;
-        });
-        if (widget.onChanged != null) {
-          widget.onChanged!(Duration(milliseconds: value.round()));
-        }
-      },
-      onChangeEnd: (value) {
-        if (widget.onChangedEnd != null) {
-          widget.onChangedEnd!(Duration(milliseconds: value.round()));
-        }
-        dragValue = null;
-      },
-      innerWidget: (percentage) {
-        return const Padding(
-          padding: EdgeInsets.all(25.0),
-          child: CircleAvatar(
-            backgroundColor: Colors.grey,
-            backgroundImage: NetworkImage(
-                'https://i1.sndcdn.com/artworks-hADAxnACXWoAx6Og-YihIxg-t500x500.jpg'),
-          ),
-        );
-      },
-      appearance: CircularSliderAppearance(
-          size: 330,
-          angleRange: 300,
-          startAngle: 300,
-          customColors: CustomSliderColors(
-              progressBarColor: Colors.deepPurple.shade700,
-              dotColor: Colors.deepPurple.shade300,
-              trackColor: Colors.grey.withOpacity(.4)),
-          customWidths: CustomSliderWidths(
-              trackWidth: 6, handlerSize: 10, progressBarWidth: 6)),
     );
   }
 }

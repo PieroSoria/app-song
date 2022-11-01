@@ -10,7 +10,8 @@ Future<AudioHandler> initAudioService() async {
         androidNotificationOngoing: true,
         androidShowNotificationBadge: true,
         androidStopForegroundOnPause: true,
-        androidNotificationClickStartsActivity: false),
+        androidNotificationIcon: "mipmap/launcher_icon",
+        androidNotificationClickStartsActivity: true),
   );
 }
 
