@@ -1,13 +1,9 @@
 import 'package:audiojet/page_manager.dart';
-import 'package:audiojet/screens/songlist_screen.dart';
 import 'package:audiojet/screens/tab_window.dart';
 import 'package:audiojet/services/service_locator.dart';
-import 'package:audiojet/utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'screens/routes.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 
 void main() async {
   await setupServiceLocator();
